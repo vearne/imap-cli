@@ -49,7 +49,9 @@ func newReadCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if len(set) != 1 {
+			// Count expanded UIDs: "1:5" is one set element but five UIDs.
+			uids, ok := set.Nums()
+			if !ok || len(uids) != 1 {
 				return fmt.Errorf("read takes exactly one UID, got %q", args[0])
 			}
 			return runWithFolder(func(c *imapclient.Client, folder string) error {

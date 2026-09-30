@@ -87,6 +87,22 @@ func TestReadBadUID(t *testing.T) {
 	}
 }
 
+func TestReadRejectsUIDRange(t *testing.T) {
+	srv := testenv.Start(t)
+	setEnvAddr(t, srv)
+	raw := "From: a@x.com\r\nSubject: m\r\n\r\nbody\r\n"
+	for i := 0; i < 5; i++ {
+		srv.Append(t, "INBOX", raw, nil, time.Now())
+	}
+
+	root := NewRootCmd()
+	root.SetOut(&bytes.Buffer{})
+	root.SetArgs([]string{"read", "1:5"})
+	if err := root.Execute(); err == nil {
+		t.Fatal("read 1:5 should fail instead of truncating to the first message")
+	}
+}
+
 func TestReadGBKCharset(t *testing.T) {
 	srv := testenv.Start(t)
 	setEnvAddr(t, srv)
