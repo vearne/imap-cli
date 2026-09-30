@@ -67,6 +67,7 @@ func (s *Server) Client(t *testing.T) *imapclient.Client {
 func (s *Server) Append(t *testing.T, mbox string, raw string, flags []imap.Flag, when time.Time) imap.UID {
 	t.Helper()
 	c := s.Client(t)
+	defer func() { c.Logout().Wait() }() //nolint:errcheck
 	cmd := c.Append(mbox, int64(len(raw)), &imap.AppendOptions{Flags: flags, Time: when})
 	if _, err := cmd.Write([]byte(raw)); err != nil {
 		t.Fatalf("append write: %v", err)
