@@ -37,6 +37,8 @@ Use --json for machine-readable output.`,
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(newReadCmd())
 	rootCmd.AddCommand(newMarkCmd())
+	rootCmd.AddCommand(newMoveCmd())
+	rootCmd.AddCommand(newDeleteCmd())
 	return rootCmd
 }
 
