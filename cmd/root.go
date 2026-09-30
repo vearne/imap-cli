@@ -35,6 +35,7 @@ Use --json for machine-readable output.`,
 	rootCmd.PersistentFlags().StringVar(&folder, "folder", "INBOX", "mailbox to operate on")
 	rootCmd.AddCommand(foldersCmd)
 	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(newReadCmd())
 	return rootCmd
 }
 
