@@ -8,7 +8,10 @@ import (
 	"github.com/vearne/imap-cli/internal/config"
 )
 
-var jsonOut bool
+var (
+	jsonOut bool
+	folder  string
+)
 
 // NewRootCmd builds a fresh root command with all subcommands registered.
 func NewRootCmd() *cobra.Command {
@@ -29,7 +32,9 @@ Use --json for machine-readable output.`,
 		SilenceErrors: false,
 	}
 	rootCmd.PersistentFlags().BoolVar(&jsonOut, "json", false, "output JSON instead of text")
+	rootCmd.PersistentFlags().StringVar(&folder, "folder", "INBOX", "mailbox to operate on")
 	rootCmd.AddCommand(foldersCmd)
+	rootCmd.AddCommand(listCmd)
 	return rootCmd
 }
 
@@ -42,4 +47,9 @@ func runWithConfig(fn func(c *imapclient.Client) error) error {
 		return err
 	}
 	return client.Run(&cfg, fn)
+}
+
+// runWithFolder wraps runWithConfig passing the --folder value.
+func runWithFolder(fn func(c *imapclient.Client, folder string) error) error {
+	return runWithConfig(func(c *imapclient.Client) error { return fn(c, folder) })
 }
