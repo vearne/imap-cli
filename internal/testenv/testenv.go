@@ -16,8 +16,6 @@ import (
 type Server struct {
 	Addr string
 	User *imapmemserver.User
-	srv  *imapserver.Server
-	ln   net.Listener
 }
 
 func Start(t *testing.T, caps ...imap.Cap) *Server {
@@ -49,7 +47,7 @@ func Start(t *testing.T, caps ...imap.Cap) *Server {
 	})
 	go srv.Serve(ln)                 //nolint:errcheck — test server
 	t.Cleanup(func() { ln.Close() }) //nolint:errcheck
-	return &Server{Addr: ln.Addr().String(), User: user, srv: srv, ln: ln}
+	return &Server{Addr: ln.Addr().String(), User: user}
 }
 
 func (s *Server) Client(t *testing.T) *imapclient.Client {
@@ -57,6 +55,9 @@ func (s *Server) Client(t *testing.T) *imapclient.Client {
 	c, err := imapclient.DialInsecure(s.Addr, nil)
 	if err != nil {
 		t.Fatalf("dial: %v", err)
+	}
+	if err := c.Login("testuser", "testpass").Wait(); err != nil {
+		t.Fatalf("login: %v", err)
 	}
 	t.Cleanup(func() { c.Logout().Wait() }) //nolint:errcheck
 	return c
