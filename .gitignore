@@ -32,3 +32,8 @@ go.work.sum
 # .vscode/
 .omo/
 .superpowers/
+.idea/
+vendor/
+
+
+
